@@ -5,6 +5,7 @@ from __future__ import unicode_literals
 from webencodings import ascii_lower
 
 from .compiler import compile_selector_list, split_whitespace
+from .interner import intern_unicode
 from ._compat import basestring, ifilter
 
 
@@ -254,15 +255,15 @@ class ElementWrapper(object):
     def local_name(self):
         """The local name of this element, as a string."""
         namespace_url, local_name = _split_etree_tag(self.etree_element.tag)
-        self.__dict__[str('namespace_url')] = namespace_url
-        return local_name
+        self.__dict__[str('namespace_url')] = intern_unicode(namespace_url)
+        return intern_unicode(local_name)
 
     @cached_property
     def namespace_url(self):
         """The namespace URL of this element, as a string."""
         namespace_url, local_name = _split_etree_tag(self.etree_element.tag)
-        self.__dict__[str('local_name')] = local_name
-        return namespace_url
+        self.__dict__[str('local_name')] = intern_unicode(local_name)
+        return intern_unicode(namespace_url)
 
     # On instances, this is overridden by an instance attribute
     # that *is* the bound `get` method of the ElementTree element.
@@ -288,12 +289,16 @@ class ElementWrapper(object):
     @cached_property
     def id(self):
         """The ID of this element, as a string."""
-        return self.get_attr('id')
+        id = self.get_attr('id')
+        if id is not None:
+            id = intern_unicode(id)
+        return id
 
     @cached_property
     def classes(self):
         """The classes of this element, as a :class:`set` of strings."""
-        return set(split_whitespace(self.get_attr('class', '')))
+        return set(intern_unicode(c) for c in
+                   split_whitespace(self.get_attr('class', '')))
 
     @cached_property
     def lang(self):
@@ -301,11 +306,11 @@ class ElementWrapper(object):
         # http://whatwg.org/C#language
         xml_lang = self.get_attr('{http://www.w3.org/XML/1998/namespace}lang')
         if xml_lang is not None:
-            return ascii_lower(xml_lang)
+            return intern_unicode(ascii_lower(xml_lang))
         if self.namespace_url == 'http://www.w3.org/1999/xhtml':
             lang = self.get_attr('lang')
             if lang is not None:
-                return ascii_lower(lang)
+                return intern_unicode(ascii_lower(lang))
         if self.parent is not None:
             return self.parent.lang
 
