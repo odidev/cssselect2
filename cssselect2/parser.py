@@ -396,9 +396,9 @@ class AttributeSelector(object):
         self.value = value
 
     def __repr__(self):
-        namespace = ('*|' if self.namespace is None
-                     else '{%s}' % self.namespace)
-        return '[%s%s%s%r]' % (namespace, self.name, self.operator, self.value)
+        namespace = '{%s}' % self.namespace if self.namespace else '*|'
+        return '[%s%s%s%r]' % (
+            namespace, self.name, self.operator or '', self.value or '')
 
 
 class PseudoClassSelector(object):
