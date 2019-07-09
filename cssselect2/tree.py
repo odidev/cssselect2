@@ -332,7 +332,7 @@ class ElementWrapper(object):
             return False
         if (self.parent.etree_element.tag == (
                 '{http://www.w3.org/1999/xhtml}fieldset') and
-            self.parent.etree_element.get('disabled') is not None and (
+            'disabled' in self.parent.etree_element.attrib and (
                 self.etree_element.tag != (
                     '{http://www.w3.org/1999/xhtml}legend') or
                 any(s.etree_element.tag == (

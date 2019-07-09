@@ -212,14 +212,14 @@ def _compile_node(selector):
 
     elif isinstance(selector, parser.PseudoClassSelector):
         if selector.name == 'link':
-            return ('%s and el.etree_element.get("href") is not None'
+            return ('%s and "href" in el.etree_element.attrib'
                     % html_tag_eq('a', 'area', 'link'))
         elif selector.name == 'enabled':
             return (
-                '(%s and el.etree_element.get("disabled") is None'
+                '(%s and "disabled" not in el.etree_element.attrib'
                 ' and not el.in_disabled_fieldset) or'
-                '(%s and el.etree_element.get("disabled") is None) or '
-                '(%s and el.etree_element.get("href") is not None)'
+                '(%s and "disabled" not in el.etree_element.attrib) or '
+                '(%s and "href" in el.etree_element.attrib)'
                 % (
                     html_tag_eq('button', 'input', 'select', 'textarea',
                                 'option'),
@@ -229,9 +229,9 @@ def _compile_node(selector):
             )
         elif selector.name == 'disabled':
             return (
-                '(%s and (el.etree_element.get("disabled") is not None'
+                '(%s and ("disabled" in el.etree_element.attrib'
                 ' or el.in_disabled_fieldset)) or'
-                '(%s and el.etree_element.get("disabled") is not None)' % (
+                '(%s and "disabled" in el.etree_element.attrib)' % (
                     html_tag_eq('button', 'input', 'select', 'textarea',
                                 'option'),
                     html_tag_eq('optgroup', 'menuitem', 'fieldset'),
@@ -239,10 +239,10 @@ def _compile_node(selector):
             )
         elif selector.name == 'checked':
             return (
-                '(%s and el.etree_element.get("checked") is not None and'
+                '(%s and "checked" in el.etree_element.attrib and'
                 ' ascii_lower(el.etree_element.get("type", "")) '
                 ' in ("checkbox", "radio"))'
-                'or (%s and el.etree_element.get("selected") is not None)'
+                'or (%s and "selected" in el.etree_element.attrib)'
                 % (
                     html_tag_eq('input', 'menuitem'),
                     html_tag_eq('option'),
