@@ -1,7 +1,8 @@
 language: python
 sudo: false
 env: PYTHON=python3
-
+notifications:
+  email: false
 git:
   submodules: false
 
@@ -12,6 +13,9 @@ matrix:
     - dist: xenial
       python: 3.6
     - dist: xenial
+      python: 3.7
+    - dist: xenial
+      arch: arm64
       python: 3.7
     - dist: bionic
       python: 3.8
